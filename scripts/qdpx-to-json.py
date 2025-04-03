@@ -11,15 +11,15 @@
 # ///
 import json
 import os
-import zipfile
-from os.path import join
-from bs4 import BeautifulSoup
-from argparse import ArgumentParser
-from bs2json import install
-import pymupdf
-import pandas as pd
-import numpy as np
 import re
+import zipfile
+from argparse import ArgumentParser
+from os.path import join
+
+import pandas as pd
+import pymupdf
+from bs2json import install
+from bs4 import BeautifulSoup
 
 fignum_regex = r"^\d[a-zA-Z]$"
 
@@ -48,8 +48,10 @@ def extract_data(
 
     project = soup.find("Project")
     sources = project.find("Sources")
-
     project_json = project.to_json()
+
+    assert project_json, "no project"
+
     out_json = join(out_dir, "output.json")
     with open(out_json, "w") as f:
         json.dump(project_json, f, indent=4)
@@ -93,6 +95,7 @@ def extract_data(
     for code in project_json["Project"]["CodeBook"]["Codes"]["Code"]:
         code_attrs = code["attrs"]
         code_name = code_attrs["name"]
+        print(code_name)
         if code_name.startswith(smart_code_prefix):
             # If this was a smart code, remove the prefix.
             code_name = code_name[len(smart_code_prefix) :]
