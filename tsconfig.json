@@ -5,6 +5,7 @@
 		"moduleResolution": "nodenext",
 		"allowImportingTsExtensions": true,
 		"skipLibCheck": true,
-		"strict": true
+		"strict": true,
+		"resolveJsonModule": true
 	}
 }

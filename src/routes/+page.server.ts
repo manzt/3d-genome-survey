@@ -1,8 +1,7 @@
-import * as fs from "node:fs/promises";
-import * as path from "node:path";
 import { z } from "zod";
-
 import type { PageServerLoad } from "./$types.js";
+
+import raw from "../output.json" with { type: "json" };
 
 const guidSchema = z.string().uuid();
 
@@ -159,16 +158,7 @@ function parseTitle(filename: string) {
 export const prerender = true;
 
 export const load: PageServerLoad = async () => {
-	const content = projectSchema.parse(
-		JSON.parse(
-			await fs.readFile(
-				path.resolve(import.meta.dirname, "../../data/output.json"),
-				{
-					encoding: "utf8",
-				},
-			),
-		),
-	);
+	const content = projectSchema.parse(raw);
 
 	const codeBook = new Map<string, string>();
 	for (const code of content.codes) {
