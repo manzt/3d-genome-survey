@@ -2,3 +2,4 @@ node_modules
 .astro
 data
 *.qdpx
+src/content/
