@@ -1,0 +1,55 @@
+---
+import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+
+// Get all sources (images)
+const sources = await getCollection('sources');
+// Get all codes
+const codes = await getCollection('codes');
+// Get all quotations that link sources to codes
+const quotations = await getCollection('quotations');
+
+// Create a map of source GUIDs to their codes
+const sourceToCodesMap = new Map<string, Set<string>>();
+
+quotations.forEach((quote: CollectionEntry<'quotations'>) => {
+  const sourceGuid = quote.data.source_guid.toString();
+  const codingGuids = quote.data.Coding.map(coding => 
+    coding.CodeRef.attrs.targetGUID.toString()
+  );
+  
+  if (!sourceToCodesMap.has(sourceGuid)) {
+    sourceToCodesMap.set(sourceGuid, new Set());
+  }
+  
+  codingGuids.forEach(guid => {
+    sourceToCodesMap.get(sourceGuid)?.add(guid);
+  });
+});
+
+// Take only the first 100 sources
+const limitedSources = sources.slice(0, 100);
+---
+
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 p-8">
+  {limitedSources.map((source) => {
+    const associatedCodes = Array.from(sourceToCodesMap.get(source.data.guid.toString()) || []);
+    const codeObjects = codes.filter((code) => associatedCodes.includes(code.data.guid.toString()));
+    
+    return (
+      <div class="border border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm hover:shadow-md transition-shadow">
+        <div class="aspect-video overflow-hidden">
+          <img src={source.data.path} alt={source.data.name} loading="lazy" class="w-full h-full object-cover" />
+        </div>
+        <div class="p-4">
+          <h3 class="text-lg font-medium mb-2">{source.data.name}</h3>
+          <ul class="flex flex-wrap gap-2">
+            {codeObjects.map((code) => (
+              <li class="bg-gray-100 px-2 py-1 rounded text-sm">{code.data.name}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    );
+  })}
+</div> 
