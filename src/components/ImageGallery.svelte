@@ -1,15 +1,17 @@
 <script lang="ts">
-export let figures: Array<{
+type Figure = {
 	source: { title: string; year: number; authors: string };
 	imagePath: Array<string>;
 	codes: Array<string>;
-}>;
+};
+
+let { figures }: { figures: Array<Figure> } = $props();
 </script>
 
 <div
   class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 p-2"
 >
-  {#each figures.slice(0, 100) as figure}
+  {#each figures as figure}
     {@const { title, authors, year } = figure.source}
     <div
       class="gallery-item border border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm hover:shadow-md transition-all duration-300 p-2"
