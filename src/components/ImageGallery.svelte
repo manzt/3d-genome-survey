@@ -1,13 +1,15 @@
 <script lang="ts">
-type Figure = {
-	source: { title: string; year: number; authors: string };
-	imagePath: Array<string>;
-	codes: Array<string>;
-};
-let {
-	figures,
-	usePlaceholder = false,
-}: { figures: Array<Figure>; usePlaceholder?: boolean } = $props();
+  import { base } from "$app/paths";
+
+  type Figure = {
+    source: { title: string; year: number; authors: string };
+    imagePath: Array<string>;
+    codes: Array<string>;
+  };
+  let {
+    figures,
+    usePlaceholder = false,
+  }: { figures: Array<Figure>; usePlaceholder?: boolean } = $props();
 </script>
 
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 p-2">
@@ -37,7 +39,7 @@ let {
             </svg>
           {:else}
             <img
-              src={`/images/${figure.imagePath[0]}/${figure.imagePath[1]}.webp`}
+              src={`${base}/images/${figure.imagePath[0]}/${figure.imagePath[1]}.webp`}
               alt={title}
               class="w-full h-full object-cover"
               loading="lazy"

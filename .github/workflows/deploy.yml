@@ -1,0 +1,59 @@
+name: Deploy to GitHub Pages
+
+on:
+  workflow_dispatch:
+  push:
+    branches: 'main'
+
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          run_install: true
+
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+
+      - name: Download qdpx 
+        run: |
+          wget -O wos_3d-chromatin-new.qdpx "https://www.dropbox.com/scl/fi/ssod0u6h26ex4mw6th9vi/wos_3d-chromatin-new.qdpx?rlkey=zhbgdzvaxzyxn9oavsc3bukck&dl=1"
+
+      - name: Process qdpx
+        run: uv run ./scripts/qdpx-to-json.py --input wos_3d-chromatin-new.qdpx --output ./data
+
+      - name: Compress images
+        run: node ./scripts/compress-images.cjs
+
+      - name: Build
+        run: pnpm build
+        env:
+          BASE_PATH: '/${{ github.event.repository.name }}'
+
+      - name: Upload Artifacts
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'build/'
+
+  Deploy:
+    needs: Build
+    runs-on: ubuntu-latest
+
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
