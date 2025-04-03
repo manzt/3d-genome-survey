@@ -1,19 +1,32 @@
 {
 	"type": "module",
 	"scripts": {
-		"dev": "astro dev",
-		"build": "astro build",
-		"fix": "biome check --fix"
+		"dev": "vite dev",
+		"build": "vite build",
+		"preview": "vite preview",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"fix": "biome check --fix .",
+		"lint": "biome ci ."
 	},
 	"devDependencies": {
-		"astro": "^5.6.0"
-	},
-	"dependencies": {
 		"@biomejs/biome": "^1.9.4",
-		"@tailwindcss/vite": "^4.1.1",
-		"@types/node": "^22.14.0",
-		"tailwindcss": "^4.1.1",
+		"@sveltejs/adapter-static": "^3.0.8",
+		"@sveltejs/kit": "^2.0.0",
+		"@sveltejs/vite-plugin-svelte": "^5.0.0",
+		"@tailwindcss/vite": "^4.0.0",
+		"@types/node": "^22.10.5",
+		"svelte": "^5.0.0",
+		"svelte-check": "^4.0.0",
+		"tailwindcss": "^4.0.0",
 		"typescript": "^5.8.2",
+		"vite": "^6.2.5",
 		"zod": "^3.24.2"
+	},
+	"packageManager": "pnpm@10.6.5",
+	"pnpm": {
+		"onlyBuiltDependencies": [
+			"@biomejs/biome",
+			"esbuild"
+		]
 	}
 }

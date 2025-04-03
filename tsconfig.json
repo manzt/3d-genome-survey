@@ -1,6 +1,10 @@
 {
-	"extends": "astro/tsconfigs/strict",
+	"extends": "./.svelte-kit/tsconfig.json",
 	"compilerOptions": {
-		"strictNullChecks": true
+		"module": "nodenext",
+		"moduleResolution": "nodenext",
+		"allowImportingTsExtensions": true,
+		"skipLibCheck": true,
+		"strict": true
 	}
 }

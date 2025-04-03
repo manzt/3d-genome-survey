@@ -3,3 +3,4 @@ node_modules
 data
 *.qdpx
 src/content/
+.svelte-kit
