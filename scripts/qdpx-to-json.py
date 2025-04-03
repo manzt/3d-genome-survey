@@ -7,6 +7,7 @@
 #     "pymupdf",
 #     "pandas",
 #     "numpy",
+#     "rich",
 # ]
 # ///
 import json
@@ -20,6 +21,7 @@ import pandas as pd
 import pymupdf
 from bs2json import install
 from bs4 import BeautifulSoup
+from rich import print
 
 fignum_regex = r"^\d[a-zA-Z]$"
 
@@ -92,10 +94,13 @@ def extract_data(
 
     # Create separate files for astro
     code_guid_to_name = dict()
-    for code in project_json["Project"]["CodeBook"]["Codes"]["Code"]:
+    for code in [
+        c
+        for group in project_json["Project"]["CodeBook"]["Codes"]["Code"]
+        for c in [group] + group.get("Code", [])
+    ]:
         code_attrs = code["attrs"]
         code_name = code_attrs["name"]
-        print(code_name)
         if code_name.startswith(smart_code_prefix):
             # If this was a smart code, remove the prefix.
             code_name = code_name[len(smart_code_prefix) :]
@@ -201,9 +206,9 @@ def extract_data(
                         "quote_guid": quotation_guid,
                         "coderef_guid": c["CodeRef"]["attrs"]["targetGUID"],
                         # Append code names for easier analysis.
-                        "code_name": code_guid_to_name.get(
+                        "code_name": code_guid_to_name[
                             c["CodeRef"]["attrs"]["targetGUID"]
-                        ),
+                        ],
                     }
                     for c in quotation["Coding"]
                 ]
