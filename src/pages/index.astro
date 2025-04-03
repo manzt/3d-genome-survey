@@ -1,18 +1,18 @@
 ---
+import { getCollection } from "astro:content";
+import ImageGallery from "../components/ImageGallery.astro";
+import SearchLayout from "../components/SearchLayout.astro";
 import Layout from "../layouts/Layout.astro";
-import ImageGallery from '../components/ImageGallery.astro';
-import SearchLayout from '../components/SearchLayout.astro';
-import { getCollection } from 'astro:content';
 
-const sources = await getCollection('sources');
-const codes = await getCollection('codes');
-const quotations = await getCollection('quotations');
+const sources = await getCollection("sources");
+const codes = await getCollection("codes");
+const quotations = await getCollection("quotations");
 ---
 
 <Layout title="3D Genome Visualization Analysis" description="Analysis of 3D genome visualization techniques and methods">
 	<div class="flex flex-col h-screen">
 		<div class="px-4 sm:px-6 lg:px-8 py-4">
-			<h1 class="text-3xl font-bold text-gray-900 mb-2">3D Genome Visualization Analysis</h1>
+			<h1 class="text-3xl font-bold text-gray-900 mb-2">3D Genome Visualization Survey</h1>
 			<div class="flex items-center gap-6 text-sm text-gray-600">
 				<div class="flex items-center gap-1">
 					<span class="font-medium" id="sourcesCount">{sources.length}</span>
@@ -37,50 +37,49 @@ const quotations = await getCollection('quotations');
 </Layout>
 
 <script>
-  // Get all code checkboxes
-  const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-  const galleryItems = document.querySelectorAll('.gallery-item');
-  const sourcesCount = document.getElementById('sourcesCount');
-  const quotationsCount = document.getElementById('quotationsCount');
+// Get all code checkboxes
+const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+const galleryItems = document.querySelectorAll(".gallery-item");
+const sourcesCount = document.getElementById("sourcesCount");
+const quotationsCount = document.getElementById("quotationsCount");
 
-  // Function to update statistics
-  function updateStatistics() {
-    const selectedCodes = Array.from(checkboxes)
-      .filter(checkbox => checkbox.checked)
-      .map(checkbox => checkbox.dataset.code);
+// Function to update statistics
+function updateStatistics() {
+	const selectedCodes = Array.from(checkboxes)
+		.filter((checkbox) => checkbox.checked)
+		.map((checkbox) => checkbox.dataset.code);
 
-    // Count visible sources
-    const visibleSources = Array.from(galleryItems)
-      .filter(item => item.style.display !== 'none')
-      .length;
-    
-    // Count visible quotations (assuming each gallery item represents a quotation)
-    const visibleQuotations = visibleSources;
+	// Count visible sources
+	const visibleSources = Array.from(galleryItems)
+		.filter((item) => item.style.display !== "none")
+		.length;
 
-    sourcesCount.textContent = visibleSources;
-    quotationsCount.textContent = visibleQuotations;
-  }
+	// Count visible quotations (assuming each gallery item represents a quotation)
+	const visibleQuotations = visibleSources;
 
-  // Add event listeners
-  checkboxes.forEach(checkbox => {
-    checkbox.addEventListener('change', () => {
-      // First update the gallery
-      const selectedCodes = Array.from(checkboxes)
-        .filter(cb => cb.checked)
-        .map(cb => cb.dataset.code);
+	sourcesCount.textContent = visibleSources;
+	quotationsCount.textContent = visibleQuotations;
+}
 
-      galleryItems.forEach(item => {
-        const itemCodes = Array.from(item.querySelectorAll('.code-pill'))
-          .map(pill => pill.textContent);
+// Add event listeners
+checkboxes.forEach((checkbox) => {
+	checkbox.addEventListener("change", () => {
+		// First update the gallery
+		const selectedCodes = Array.from(checkboxes)
+			.filter((cb) => cb.checked)
+			.map((cb) => cb.dataset.code);
 
-        const shouldShow = selectedCodes.length === 0 || 
-          selectedCodes.every(code => itemCodes.includes(code));
-        
-        item.style.display = shouldShow ? 'block' : 'none';
-      });
+		galleryItems.forEach((item) => {
+			const itemCodes = Array.from(item.querySelectorAll(".code-pill"))
+				.map((pill) => pill.textContent);
 
-      // Then update the statistics
-      updateStatistics();
-    });
-  });
+			const shouldShow = selectedCodes.length === 0 ||
+				selectedCodes.every((code) => itemCodes.includes(code));
+			item.style.display = shouldShow ? "block" : "none";
+		});
+
+		// Then update the statistics
+		updateStatistics();
+	});
+});
 </script>

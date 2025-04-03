@@ -1,9 +1,9 @@
 ---
-import type { CollectionEntry } from 'astro:content';
-import { getCollection } from 'astro:content';
+import type { CollectionEntry } from "astro:content";
+import { getCollection } from "astro:content";
 
-const codes = await getCollection('codes');
-const codeNames = codes.map(code => code.data.name);
+const codes = await getCollection("codes");
+const codeNames = codes.map((code) => code.data.name);
 ---
 
 <div class="flex h-[calc(100vh-4rem)]">

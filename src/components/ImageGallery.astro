@@ -1,43 +1,45 @@
 ---
-import { getCollection } from 'astro:content';
-import type { CollectionEntry } from 'astro:content';
-
-// Get all sources (images)
-const sources = await getCollection('sources');
-// Get all codes
-const codes = await getCollection('codes');
-// Get all quotations that link sources to codes
-const quotations = await getCollection('quotations');
-
+import { getCollection } from "astro:content";
+const sources = await getCollection("sources");
+const codes = await getCollection("codes");
+const quotations = await getCollection("quotations");
 // Create a map of source GUIDs to their codes
 const sourceToCodesMap = new Map<string, Set<string>>();
+for (const quote of quotations) {
+	const sourceGuid = quote.data.source_guid.toString();
+	const codingGuids = quote.data.Coding.map((coding) =>
+		coding.CodeRef.attrs.targetGUID.toString(),
+	);
+	if (!sourceToCodesMap.has(sourceGuid)) {
+		sourceToCodesMap.set(sourceGuid, new Set());
+	}
+	for (const guid of codingGuids) {
+		sourceToCodesMap.get(sourceGuid)?.add(guid);
+	}
+}
 
-quotations.forEach((quote: CollectionEntry<'quotations'>) => {
-  const sourceGuid = quote.data.source_guid.toString();
-  const codingGuids = quote.data.Coding.map(coding => 
-    coding.CodeRef.attrs.targetGUID.toString()
-  );
-  
-  if (!sourceToCodesMap.has(sourceGuid)) {
-    sourceToCodesMap.set(sourceGuid, new Set());
-  }
-  
-  codingGuids.forEach(guid => {
-    sourceToCodesMap.get(sourceGuid)?.add(guid);
-  });
-});
-
-// Take only the first 100 sources
-const limitedSources = sources.slice(0, 100);
+function parseTitle(filename: string) {
+	// Remove the .pdf extension
+	const name = filename.replace(/\.pdf$/, "");
+	// Match format: "Authors - Year - Title"
+	const match = name.match(/^(.+?) - (\d{4}) - (.+)$/);
+	if (!match) throw Error("Cannot parse title");
+	const [, authors, year, title] = match;
+	return { authors, year, title };
+}
 ---
-
 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 p-2">
   {sources.map((source) => {
     const associatedCodes = Array.from(sourceToCodesMap.get(source.data.guid.toString()) || []);
     const codeObjects = codes.filter((code) => associatedCodes.includes(code.data.guid.toString()));
+    const { authors, year, title } = parseTitle(source.data.name);
     return (
       <div class="gallery-item border border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm hover:shadow-md transition-shadow p-2">
-        <h3 class="text-xs font-medium mb-1 line-clamp-2">{source.data.name}</h3>
+        <div class="flex items-center justify-between mb-1">
+          <span class="text-xs font-semibold text-gray-500">{year}</span>
+          <span class="text-xs italic text-gray-600 truncate max-w-[70%]">{authors}</span>
+        </div>
+        <h3 class="text-xs font-medium mb-2 line-clamp-3">{title}</h3>
         <ul class="flex flex-wrap gap-0.5">
           {codeObjects.map((code) => (
             <li class="code-pill bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded-full text-[10px]">{code.data.name}</li>
@@ -46,4 +48,4 @@ const limitedSources = sources.slice(0, 100);
       </div>
     );
   })}
-</div> 
+</div>
