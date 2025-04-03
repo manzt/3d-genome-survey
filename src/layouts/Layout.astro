@@ -21,9 +21,7 @@ let { title, description }: Props = Astro.props;
 			content={description}
 		/>
 	</head>
-	<body>
-		<main class="mt-5">
-			<slot />
-		</main>
+	<body class="h-screen flex flex-col">
+		<slot />
 	</body>
 </html>

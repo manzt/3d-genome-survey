@@ -1,0 +1,84 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { getCollection } from 'astro:content';
+
+const codes = await getCollection('codes');
+const codeNames = codes.map(code => code.data.name);
+---
+
+<div class="flex h-[calc(100vh-4rem)]">
+  <!-- Search Sidebar -->
+  <div class="w-48 bg-gray-50 border-r border-gray-200 flex flex-col">
+    <div class="p-2 bg-gray-50">
+      <input 
+        type="text" 
+        placeholder="Search codes..." 
+        class="w-full px-2 py-1 text-sm border border-gray-300 rounded"
+        id="codeSearch"
+      />
+    </div>
+    <div class="flex-1 overflow-y-auto p-2">
+      <div class="space-y-1">
+        {codeNames.map((codeName) => (
+          <label class="flex items-center space-x-1 text-sm">
+            <input 
+              type="checkbox" 
+              class="form-checkbox h-3 w-3 text-blue-600"
+              data-code={codeName}
+            />
+            <span class="truncate">{codeName}</span>
+          </label>
+        ))}
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="flex-1 overflow-y-auto">
+    <slot />
+  </div>
+</div>
+
+<script>
+  // Get all code checkboxes
+  const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+  const galleryItems = document.querySelectorAll('.gallery-item');
+  const searchInput: HTMLInputElement = document.getElementById('codeSearch') as HTMLInputElement;
+
+  // Function to filter gallery items
+  function filterGallery() {
+    const selectedCodes = Array.from(checkboxes)
+      .filter(checkbox => checkbox.checked)
+      .map(checkbox => checkbox.dataset.code);
+
+    galleryItems.forEach(item => {
+      const itemCodes = Array.from(item.querySelectorAll('.code-pill'))
+        .map(pill => pill.textContent);
+
+      // Show item if it has all selected codes
+      const shouldShow = selectedCodes.length === 0 || 
+        selectedCodes.every(code => itemCodes.includes(code));
+      
+      item.style.display = shouldShow ? 'block' : 'none';
+    });
+  }
+
+  // Function to filter code list
+  function filterCodeList(searchTerm) {
+    const labels = document.querySelectorAll('label');
+    labels.forEach(label => {
+      const codeName = label.querySelector('span').textContent;
+      const shouldShow = codeName.toLowerCase().includes(searchTerm.toLowerCase());
+      label.style.display = shouldShow ? 'flex' : 'none';
+    });
+  }
+
+  // Add event listeners
+  checkboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', filterGallery);
+  });
+
+  searchInput.addEventListener('input', (e) => {
+    filterCodeList(e.target.value);
+  });
+</script> 

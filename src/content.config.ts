@@ -49,28 +49,10 @@ const quoteCollection = defineCollection({
 	}),
 });
 
-const codeSetCollection = defineCollection({
-	type: "data",
-	schema: z.object({
-		attrs: z.object({
-			guid: z.string(),
-			name: z.string(),
-		}),
-		MemberCode: z.array(
-			z.object({
-				attrs: z.object({
-					targetGUID: reference("codes"),
-				}),
-			}),
-		),
-	}),
-});
-
 // 3. Export a single `collections` object to register your collection(s)
 //    This key should match your collection directory name in "src/content"
 export const collections = {
 	codes: codeCollection,
 	quotations: quoteCollection,
 	sources: sourceCollection,
-	//'sets': codeSetCollection,
 };
