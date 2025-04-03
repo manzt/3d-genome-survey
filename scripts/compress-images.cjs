@@ -46,7 +46,7 @@ function processDirectory(dirPath, relativePath = "") {
 }
 
 let inputDir = path.resolve(__dirname, "../data/images/");
-let outputDir = path.resolve(__dirname, "../src/images/");
+let outputDir = path.resolve(__dirname, "../static/images/");
 
 if (!fs.existsSync(outputDir)) {
 	fs.mkdirSync(outputDir, { recursive: true });
