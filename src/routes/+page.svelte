@@ -1,14 +1,14 @@
 <script lang="ts">
-	import type { PageData } from "./$types.ts";
-	import ImageGallery from "../components/ImageGallery.svelte";
+import ImageGallery from "../components/ImageGallery.svelte";
+import type { PageData } from "./$types.ts";
 
-	let { data }: { data: PageData } = $props();
-	const sources = new Set(data.figures.map((d) => d.source.title));
-	const codes = new Set(data.figures.flatMap((d) => d.codes));
+let { data }: { data: PageData } = $props();
+const sources = new Set(data.figures.map((d) => d.source.title));
+const codes = new Set(data.figures.flatMap((d) => d.codes));
 
-	let sourcesCount = sources.size;
-	let quotationsCount = data.figures.length;
-	let selectedCodes = new Set();
+let sourcesCount = sources.size;
+let quotationsCount = data.figures.length;
+let selectedCodes = new Set();
 </script>
 
 <div class="flex flex-col h-screen">

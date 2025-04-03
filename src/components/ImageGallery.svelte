@@ -1,9 +1,9 @@
 <script lang="ts">
-  export let figures: Array<{
-    source: { title: string; year: number; authors: string };
-    imagePath: Array<string>;
-    codes: Array<string>;
-  }>;
+export let figures: Array<{
+	source: { title: string; year: number; authors: string };
+	imagePath: Array<string>;
+	codes: Array<string>;
+}>;
 </script>
 
 <div
