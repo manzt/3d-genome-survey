@@ -1,38 +1,11 @@
 ---
-import { getCollection } from "astro:content";
-const sources = await getCollection("sources");
-const codes = await getCollection("codes");
-const quotations = await getCollection("quotations");
-// Create a map of source GUIDs to their codes
-const sourceToCodesMap = new Map<string, Set<string>>();
-for (const quote of quotations) {
-	const sourceGuid = quote.data.source_guid.toString();
-	const codingGuids = quote.data.Coding.map((coding) =>
-		coding.CodeRef.attrs.targetGUID.toString(),
-	);
-	if (!sourceToCodesMap.has(sourceGuid)) {
-		sourceToCodesMap.set(sourceGuid, new Set());
-	}
-	for (const guid of codingGuids) {
-		sourceToCodesMap.get(sourceGuid)?.add(guid);
-	}
-}
+import { load } from "../loader.ts";
 
-function parseTitle(filename: string) {
-	// Remove the .pdf extension
-	const name = filename.replace(/\.pdf$/, "");
-	// Match format: "Authors - Year - Title"
-	const match = name.match(/^(.+?) - (\d{4}) - (.+)$/);
-	if (!match) throw Error("Cannot parse title");
-	const [, authors, year, title] = match;
-	return { authors, year, title };
-}
+let figures = await load();
 ---
 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 p-2">
-  {sources.map((source) => {
-    const associatedCodes = Array.from(sourceToCodesMap.get(source.data.guid.toString()) || []);
-    const codeObjects = codes.filter((code) => associatedCodes.includes(code.data.guid.toString()));
-    const { authors, year, title } = parseTitle(source.data.name);
+  {figures.slice(0, 100).map((figure) => {
+    const {title, authors, year } = figure.source;
     return (
       <div class="gallery-item border border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm hover:shadow-md transition-shadow p-2">
         <div class="flex items-center justify-between mb-1">
@@ -41,8 +14,8 @@ function parseTitle(filename: string) {
         </div>
         <h3 class="text-xs font-medium mb-2 line-clamp-3">{title}</h3>
         <ul class="flex flex-wrap gap-0.5">
-          {codeObjects.map((code) => (
-            <li class="code-pill bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded-full text-[10px]">{code.data.name}</li>
+          {figure.codes.map((code) => (
+            <li class="code-pill bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded-full text-[10px]">{code}</li>
           ))}
         </ul>
       </div>

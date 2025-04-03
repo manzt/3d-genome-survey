@@ -1,12 +1,23 @@
 ---
-import { getCollection } from "astro:content";
 import ImageGallery from "../components/ImageGallery.astro";
 import SearchLayout from "../components/SearchLayout.astro";
 import Layout from "../layouts/Layout.astro";
 
-const sources = await getCollection("sources");
-const codes = await getCollection("codes");
-const quotations = await getCollection("quotations");
+import { load } from "../loader.ts";
+
+let figures = await load();
+
+let sources = figures.reduce((acc, d) => {
+	acc.add(d.source.title);
+	return acc;
+}, new Set());
+
+let codes = figures.reduce((acc, d) => {
+	for (let code of d.codes) {
+		acc.add(code);
+	}
+	return acc;
+}, new Set());
 ---
 
 <Layout title="3D Genome Visualization Analysis" description="Analysis of 3D genome visualization techniques and methods">
@@ -15,15 +26,15 @@ const quotations = await getCollection("quotations");
 			<h1 class="text-3xl font-bold text-gray-900 mb-2">3D Genome Visualization Survey</h1>
 			<div class="flex items-center gap-6 text-sm text-gray-600">
 				<div class="flex items-center gap-1">
-					<span class="font-medium" id="sourcesCount">{sources.length}</span>
-					<span>sources</span>
+					<span class="font-medium" id="sourcesCount">{sources.size}</span>
+					<span>papers</span>
 				</div>
 				<div class="flex items-center gap-1">
-					<span class="font-medium">{codes.length}</span>
+					<span class="font-medium">{codes.size}</span>
 					<span>codes</span>
 				</div>
 				<div class="flex items-center gap-1">
-					<span class="font-medium" id="quotationsCount">{quotations.length}</span>
+					<span class="font-medium" id="quotationsCount">{figures.length}</span>
 					<span>quotations</span>
 				</div>
 			</div>
@@ -37,13 +48,11 @@ const quotations = await getCollection("quotations");
 </Layout>
 
 <script>
-// Get all code checkboxes
 const checkboxes = document.querySelectorAll('input[type="checkbox"]');
 const galleryItems = document.querySelectorAll(".gallery-item");
 const sourcesCount = document.getElementById("sourcesCount");
 const quotationsCount = document.getElementById("quotationsCount");
 
-// Function to update statistics
 function updateStatistics() {
 	const selectedCodes = Array.from(checkboxes)
 		.filter((checkbox) => checkbox.checked)
@@ -61,7 +70,6 @@ function updateStatistics() {
 	quotationsCount.textContent = visibleQuotations;
 }
 
-// Add event listeners
 checkboxes.forEach((checkbox) => {
 	checkbox.addEventListener("change", () => {
 		// First update the gallery
@@ -78,7 +86,6 @@ checkboxes.forEach((checkbox) => {
 			item.style.display = shouldShow ? "block" : "none";
 		});
 
-		// Then update the statistics
 		updateStatistics();
 	});
 });
