@@ -184,6 +184,7 @@ export const load: PageServerLoad = async () => {
 		imagePath: Array<string>;
 		codes: Array<string>;
 	}> = [];
+
 	for (const source of content.sources) {
 		for (const selection of source.selections) {
 			figures.push({
@@ -201,5 +202,18 @@ export const load: PageServerLoad = async () => {
 		}
 	}
 
-	return { figures };
+	// codes to ignore
+	const excludeCodes = new Set([
+		"org:complex, needs to be looked over",
+		"org:exclude candidate",
+		"size used",
+	]);
+
+	return {
+		figures: figures.flatMap((figure) => {
+			let codes = figure.codes.filter((code) => !excludeCodes.has(code));
+			if (codes.length === 0) return [];
+			return { ...figure, codes };
+		}),
+	};
 };

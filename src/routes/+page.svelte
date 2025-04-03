@@ -6,14 +6,41 @@ let { data }: { data: PageData } = $props();
 let { figures } = data;
 
 let sources = new Set(figures.map((d) => d.source.title));
-let codes = $state(
+
+// Parse codes into groups
+let codeGroups = $state(
 	Array.from(new Set(figures.flatMap((d) => d.codes)))
 		.toSorted()
-		.map((code) => ({ name: code, selected: false })),
+		.reduce(
+			(acc, code) => {
+				const [group, name] = code.split(":");
+				if (!acc[group]) {
+					acc[group] = [];
+				}
+				acc[group].push({ name: code, selected: false });
+				return acc;
+			},
+			{} as Record<string, Array<{ name: string; selected: boolean }>>,
+		),
 );
+
 let selected = $derived(
-	new Set(codes.filter((codes) => codes.selected).map((e) => e.name)),
+	new Set(
+		Object.values(codeGroups)
+			.flat()
+			.filter((code) => code.selected)
+			.map((e) => e.name),
+	),
 );
+
+function resetFilters() {
+	codeGroups = Object.fromEntries(
+		Object.entries(codeGroups).map(([group, codes]) => [
+			group,
+			codes.map((code) => ({ ...code, selected: false })),
+		]),
+	);
+}
 </script>
 
 <div class="flex flex-col h-screen">
@@ -28,7 +55,9 @@ let selected = $derived(
 			</div>
 			<div class="flex items-center gap-1">
 				<span class="font-medium"
-					>{selected.size === 0 ? codes.length : selected.size}
+					>{selected.size === 0
+						? Object.values(codeGroups).flat().length
+						: selected.size}
 					<span>codes</span>
 				</span>
 			</div>
@@ -39,35 +68,49 @@ let selected = $derived(
 		</div>
 	</div>
 
-	<div class="flex-1 min-h-0">
-		<div class="flex flex-col h-full">
-			<div class="p-4 border-b">
-				<div class="flex flex-wrap gap-2">
-					{#each codes as code}
-						<label class="inline-flex items-center">
-							<input
-								type="checkbox"
-								class="form-checkbox h-4 w-4 text-blue-600"
-								bind:checked={code.selected}
-							/>
-							<span class="ml-2 text-sm text-gray-700"
-								>{code.name}</span
-							>
-						</label>
-					{/each}
-				</div>
+	<div class="flex-1 min-h-0 flex">
+		<div class="w-64 overflow-y-auto px-4">
+			<div class="flex items-center justify-between mb-3">
+				<h2 class="text-lg font-semibold text-gray-900">Filters</h2>
+				{#if selected.size > 0}
+					<button
+						class="text-xs text-gray-500 hover:text-gray-700 transition-colors duration-150"
+						on:click={resetFilters}
+					>
+						Reset
+					</button>
+				{/if}
 			</div>
-			<div class="flex-1 overflow-auto">
-				<ImageGallery
-					figures={selected.size === 0
-						? data.figures
-						: data.figures.filter((figure) =>
-								[...selected].every((code) =>
-									figure.codes.includes(code),
-								),
-							)}
-				/>
+			<div class="space-y-4">
+				{#each Object.entries(codeGroups) as [group, codes]}
+					<div>
+						<h3 class="text-xs font-medium text-gray-500 mb-2 uppercase tracking-wider">{group}</h3>
+						<div class="flex flex-wrap gap-1.5">
+							{#each codes as code}
+								<button
+									class="px-2.5 py-1 text-xs rounded-full transition-colors duration-150 {code.selected
+										? 'bg-blue-100 text-blue-800 hover:bg-blue-200'
+										: 'bg-gray-100 text-gray-600 hover:bg-gray-200'}"
+									on:click={() => (code.selected = !code.selected)}
+								>
+									{code.name.split(':')[1]}
+								</button>
+							{/each}
+						</div>
+					</div>
+				{/each}
 			</div>
+		</div>
+		<div class="flex-1 overflow-auto">
+			<ImageGallery
+				figures={selected.size === 0
+					? data.figures
+					: data.figures.filter((figure) =>
+							[...selected].every((code) =>
+								figure.codes.includes(code),
+							),
+						)}
+			/>
 		</div>
 	</div>
 </div>
