@@ -112,7 +112,7 @@ function reset() {
 			</div>
 		</div>
 		<div class="flex-1 overflow-auto">
-			<ImageGallery figures={filteredFigures} />
+			<ImageGallery figures={filteredFigures} usePlaceholder={false} />
 		</div>
 	</div>
 </div>

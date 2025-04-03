@@ -4,3 +4,6 @@ data
 *.qdpx
 src/content/
 .svelte-kit
+build
+static/images
+
