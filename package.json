@@ -1,16 +1,18 @@
 {
-  "scripts": {
-    "dev": "astro dev",
-    "build": "astro build"
-  },
-  "devDependencies": {
-    "astro": "^5.6.0"
-  },
-  "dependencies": {
-    "@astrojs/svelte": "^7.0.9",
-    "@tailwindcss/vite": "^4.1.1",
-    "svelte": "^5.25.6",
-    "tailwindcss": "^4.1.1",
-    "typescript": "^5.8.2"
-  }
+	"scripts": {
+		"dev": "astro dev",
+		"build": "astro build",
+		"fix": "biome check --fix"
+	},
+	"devDependencies": {
+		"astro": "^5.6.0"
+	},
+	"dependencies": {
+		"@astrojs/svelte": "^7.0.9",
+		"@biomejs/biome": "^1.9.4",
+		"@tailwindcss/vite": "^4.1.1",
+		"svelte": "^5.25.6",
+		"tailwindcss": "^4.1.1",
+		"typescript": "^5.8.2"
+	}
 }
