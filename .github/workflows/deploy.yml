@@ -3,7 +3,7 @@ name: Deploy to GitHub Pages
 on:
   workflow_dispatch:
   push:
-    branches: 'main'
+    branches: "main"
 
 jobs:
   Build:
@@ -21,7 +21,7 @@ jobs:
         with:
           version: "latest"
 
-      - name: Download qdpx 
+      - name: Download qdpx
         if: false
         run: |
           wget -O wos_3d-chromatin-new.qdpx "https://www.dropbox.com/scl/fi/ssod0u6h26ex4mw6th9vi/wos_3d-chromatin-new.qdpx?rlkey=zhbgdzvaxzyxn9oavsc3bukck&dl=1"
@@ -30,9 +30,9 @@ jobs:
         if: false
         run: uv run ./scripts/qdpx-to-json.py --input wos_3d-chromatin-new.qdpx --output ./data
 
-      - name: Compress images
+      - name: Prepare static assets
         if: false
-        run: node ./scripts/compress-images.cjs
+        run: node ./scripts/prepare-assets.js
 
       - name: Download / unzip images
         run: |
@@ -43,12 +43,12 @@ jobs:
       - name: Build
         run: pnpm build
         env:
-          BASE_PATH: '/${{ github.event.repository.name }}'
+          BASE_PATH: "/${{ github.event.repository.name }}"
 
       - name: Upload Artifacts
         uses: actions/upload-pages-artifact@v3
         with:
-          path: 'build/'
+          path: "build/"
 
   Deploy:
     needs: Build
