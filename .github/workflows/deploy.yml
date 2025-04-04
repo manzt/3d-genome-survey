@@ -22,14 +22,23 @@ jobs:
           version: "latest"
 
       - name: Download qdpx 
+        if: false
         run: |
           wget -O wos_3d-chromatin-new.qdpx "https://www.dropbox.com/scl/fi/ssod0u6h26ex4mw6th9vi/wos_3d-chromatin-new.qdpx?rlkey=zhbgdzvaxzyxn9oavsc3bukck&dl=1"
 
       - name: Process qdpx
+        if: false
         run: uv run ./scripts/qdpx-to-json.py --input wos_3d-chromatin-new.qdpx --output ./data
 
       - name: Compress images
+        if: false
         run: node ./scripts/compress-images.cjs
+
+      - name: Download / unzip images
+        run: |
+          wget https://pub-0a7b3f07f3cc470b9031f1d85ea89544.r2.dev/images.zip
+          mkdir static/
+          unzip images.zip -d static/images/
 
       - name: Build
         run: pnpm build
