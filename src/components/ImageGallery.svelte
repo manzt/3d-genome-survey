@@ -14,7 +14,7 @@ let {
 }: { figures: Array<Figure>; usePlaceholder?: boolean } = $props();
 
 function navigateToDetail(figure: Figure) {
-	goto(`/detail/${figure.imagePath.at(-1)}`, { noScroll: true });
+	goto(`${base}/detail/${figure.imagePath.at(-1)}`, { noScroll: true });
 }
 </script>
 
@@ -23,7 +23,13 @@ function navigateToDetail(figure: Figure) {
     {@const { title, authors, year } = figure.source}
     <div
       class="border border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm hover:shadow-md transition-all duration-300 p-2 cursor-pointer"
+      role="button"
+      tabindex="0"
+      aria-label={`View details for ${title}`}
       onclick={() => navigateToDetail(figure)}
+      onkeydown={(e) => {
+        if (e.key === "Enter" || e.key === " ") navigateToDetail(figure);
+      }}
     >
       <div class="h-full flex flex-col">
         <div
