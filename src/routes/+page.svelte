@@ -1,34 +1,22 @@
 <script lang="ts">
-import ImageGallery from "../components/ImageGallery.svelte";
 import type { PageData } from "./$types.ts";
+
+import ImageGallery from "../components/ImageGallery.svelte";
 
 let { data }: { data: PageData } = $props();
 let { figures } = data;
 
-let groups = $state(
+let codes = $state(
 	Array.from(new Set(figures.flatMap((d) => d.codes)))
 		.toSorted()
-		.reduce(
-			(acc, code) => {
-				let [grp, _] = code.split(":");
-				if (!acc[grp]) acc[grp] = [];
-				acc[grp].push({ name: code, selected: false });
-				return acc;
-			},
-			{} as Record<string, Array<{ name: string; selected: boolean }>>,
-		),
+		.map((name) => ({ name, selected: false })),
 );
 
 let selected = $derived(
-	new Set(
-		Object.values(groups)
-			.flat()
-			.filter((code) => code.selected)
-			.map((e) => e.name),
-	),
+	new Set(codes.filter((code) => code.selected).map((e) => e.name)),
 );
 
-let filteredFigures = $derived.by(() =>
+let filteredFigures = $derived(
 	selected.size === 0
 		? data.figures
 		: data.figures.filter((figure) =>
@@ -36,11 +24,27 @@ let filteredFigures = $derived.by(() =>
 			),
 );
 
+let paperCount = $derived(
+	new Set(filteredFigures.map((d) => d.source.title)).size,
+);
+
+let available = $derived.by(() => {
+	if (selected.size === 0) {
+		return new Set(codes.map((code) => code.name));
+	}
+
+	// all figures that match current selection
+	let matching = data.figures.filter((figure) =>
+		[...selected].every((code) => figure.codes.includes(code)),
+	);
+
+	// all codes that appear in these matching figures
+	return new Set(matching.flatMap((figure) => figure.codes));
+});
+
 function reset() {
-	for (const group of Object.values(groups)) {
-		for (const item of group) {
-			item.selected = false;
-		}
+	for (let code of codes) {
+		code.selected = false;
 	}
 }
 </script>
@@ -52,27 +56,21 @@ function reset() {
 		</h1>
 		<div class="flex items-center gap-6 text-sm text-gray-600">
 			<div class="flex items-center gap-1">
-				<span class="font-medium"
-					>{new Set(filteredFigures.map((d) => d.source.title))
-						.size}</span
-				>
+				<span class="font-medium">{paperCount}</span>
 				<span>papers</span>
 			</div>
 			<div class="flex items-center gap-1">
 				<span class="font-medium"
-					>{selected.size === 0
-						? Object.values(groups).flat().length
-						: selected.size}
+					>{selected.size === 0 ? codes.length : selected.size}
 					<span>code{selected.size === 1 ? "" : "s"}</span>
 				</span>
 			</div>
 			<div class="flex items-center gap-1">
 				<span class="font-medium">{filteredFigures.length}</span>
-				<span>quotation{filteredFigures.length === 1 ? "" : "s"}</span>
+				<span>figure{filteredFigures.length === 1 ? "" : "s"}</span>
 			</div>
 		</div>
 	</div>
-
 	<div class="flex-1 min-h-0 flex">
 		<div class="w-64 overflow-y-auto px-4">
 			<div class="flex items-center justify-between mb-3">
@@ -87,7 +85,7 @@ function reset() {
 				{/if}
 			</div>
 			<div class="space-y-4">
-				{#each Object.entries(groups) as [group, codes]}
+				{#each Object.entries(Object.groupBy(codes, (code) => code.name.split(":")[0])) as [group, groupCodes]}
 					<div>
 						<h3
 							class="text-xs font-medium text-gray-500 mb-2 uppercase tracking-wider"
@@ -95,13 +93,21 @@ function reset() {
 							{group}
 						</h3>
 						<div class="flex flex-wrap gap-1.5">
-							{#each codes as code}
+							{#each groupCodes ?? [] as code}
 								<button
-									class="px-2.5 py-1 text-xs rounded-full transition-colors duration-150 {code.selected
-										? 'bg-blue-100 text-blue-800 hover:bg-blue-200'
-										: 'bg-gray-100 text-gray-600 hover:bg-gray-200'}"
+									class={[
+										"px-2.5 py-1 text-xs rounded-full transition-colors duration-150",
+										code.selected
+											? "bg-blue-100 text-blue-800 hover:bg-blue-200"
+											: available.has(code.name)
+												? "bg-gray-100 text-gray-600 hover:bg-gray-200"
+												: "bg-gray-100 text-gray-400 opacity-50 cursor-not-allowed",
+									]}
 									onclick={() =>
+										available.has(code.name) &&
 										(code.selected = !code.selected)}
+									disabled={!available.has(code.name) &&
+										!code.selected}
 								>
 									{code.name.split(":")[1]}
 								</button>

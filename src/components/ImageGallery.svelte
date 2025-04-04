@@ -1,15 +1,16 @@
 <script lang="ts">
-  import { base } from "$app/paths";
+import { base } from "$app/paths";
 
-  type Figure = {
-    source: { title: string; year: number; authors: string };
-    imagePath: Array<string>;
-    codes: Array<string>;
-  };
-  let {
-    figures,
-    usePlaceholder = false,
-  }: { figures: Array<Figure>; usePlaceholder?: boolean } = $props();
+type Figure = {
+	source: { title: string; year: number; authors: string };
+	imagePath: Array<string>;
+	codes: Array<string>;
+};
+
+let {
+	figures,
+	usePlaceholder = false,
+}: { figures: Array<Figure>; usePlaceholder?: boolean } = $props();
 </script>
 
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 p-2">
