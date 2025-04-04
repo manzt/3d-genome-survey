@@ -36,7 +36,7 @@ jobs:
 
       - name: Download / unzip images
         run: |
-          wget https://pub-0a7b3f07f3cc470b9031f1d85ea89544.r2.dev/images.zip
+          wget https://github.com/manzt/3d-genome-survey/releases/download/1.0.0/images.zip
           mkdir static/
           unzip images.zip -d static/images/
 
