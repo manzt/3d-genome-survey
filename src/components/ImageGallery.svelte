@@ -1,4 +1,5 @@
 <script lang="ts">
+import { goto } from "$app/navigation";
 import { base } from "$app/paths";
 
 type Figure = {
@@ -11,13 +12,18 @@ let {
 	figures,
 	usePlaceholder = false,
 }: { figures: Array<Figure>; usePlaceholder?: boolean } = $props();
+
+function navigateToDetail(figure: Figure) {
+	goto(`/detail/${figure.imagePath.at(-1)}`);
+}
 </script>
 
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 p-2">
   {#each figures as figure}
     {@const { title, authors, year } = figure.source}
     <div
-      class="gallery-item border border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm hover:shadow-md transition-all duration-300 p-2"
+      class="border border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm hover:shadow-md transition-all duration-300 p-2 cursor-pointer"
+      onclick={() => navigateToDetail(figure)}
     >
       <div class="h-full flex flex-col">
         <div
