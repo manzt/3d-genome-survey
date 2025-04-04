@@ -1,12 +1,12 @@
 <script lang="ts">
-import "../app.css";
-
-import ImageGallery from "../components/ImageGallery.svelte";
-import type { LayoutData } from "./$types.ts";
-
 import { base } from "$app/paths";
 import { page } from "$app/state";
 import type { Snippet } from "svelte";
+
+import "../app.css";
+import ImageGallery from "../components/ImageGallery.svelte";
+import { groupBy } from "../lib.ts";
+import type { LayoutData } from "./$types.ts";
 
 let { data, children }: { data: LayoutData; children: Snippet } = $props();
 let { figures } = data;
@@ -90,7 +90,7 @@ function reset() {
 				{/if}
 			</div>
 			<div class="space-y-4">
-				{#each Object.entries(Object.groupBy(codes, (code) => code.name.split(":")[0])) as [group, groupCodes]}
+				{#each Object.entries(groupBy(codes, (code) => code.name.split(":")[0])) as [group, groupCodes]}
 					<div>
 						<h3
 							class="text-xs font-medium text-gray-500 mb-2 uppercase tracking-wider"

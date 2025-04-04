@@ -12,7 +12,7 @@ let { data: figure }: { data: PageData } = $props();
 		<button
 			aria-label="go back"
 			class="flex items-center justify-center w-8 h-8 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors duration-150"
-			onclick={() => goto(`${base}/`)}
+			onclick={() => goto(`${base}/`, { noScroll: true })}
 		>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
@@ -30,10 +30,8 @@ let { data: figure }: { data: PageData } = $props();
 		<h1 class="text-lg font-semibold text-gray-900 ml-1">details</h1>
 	</div>
 
-	<!-- Content area -->
 	<div class="flex-1 overflow-auto">
 		<div class="mx-auto max-w-xl">
-			<!-- Image -->
 			<div class="bg-white">
 				<div class="relative">
 					<img
@@ -50,7 +48,6 @@ let { data: figure }: { data: PageData } = $props();
 				</h2>
 
 				<div class="mb-3">
-					<h3 class="text-xs font-medium text-gray-500 mb-1">Tags</h3>
 					<div class="flex flex-wrap gap-1">
 						{#each figure.codes || [] as code}
 							<span
@@ -63,9 +60,6 @@ let { data: figure }: { data: PageData } = $props();
 				</div>
 
 				<div class="pt-2 border-t border-gray-200">
-					<h3 class="text-xs font-medium text-gray-500 mb-1">
-						Source
-					</h3>
 					<div class="text-xs text-gray-600">
 						<p class="mb-0.5">
 							<span class="font-medium">Authors:</span>

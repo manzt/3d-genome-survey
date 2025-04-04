@@ -14,7 +14,7 @@ let {
 }: { figures: Array<Figure>; usePlaceholder?: boolean } = $props();
 
 function navigateToDetail(figure: Figure) {
-	goto(`/detail/${figure.imagePath.at(-1)}`);
+	goto(`/detail/${figure.imagePath.at(-1)}`, { noScroll: true });
 }
 </script>
 

@@ -201,3 +201,25 @@ export async function loadFigures() {
 		return { ...figure, codes };
 	});
 }
+
+/**
+ * Groups members of an iterable according to the return value of the passed callback.
+ * @param items An iterable.
+ * @param keySelector A callback which will be invoked for each item in items.
+ *
+ * TODO: Replace with `Object.groupBy` once stabilized.
+ */
+export function groupBy<K extends PropertyKey, T>(
+	items: Iterable<T>,
+	keySelector: (item: T, index: number) => K,
+): Partial<Record<K, T[]>> {
+	let obj = {} as Record<K, T[]>;
+	let i = 0;
+	for (let item of items) {
+		let key = keySelector(item, i);
+		if (obj[key] === undefined) obj[key] = [];
+		obj[key].push(item);
+		i++;
+	}
+	return obj;
+}
