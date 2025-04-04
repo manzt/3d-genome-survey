@@ -3,6 +3,8 @@ import type { PageServerLoad } from "./$types.ts";
 
 import { loadFigures } from "../../../lib.ts";
 
+export const prerender = true;
+
 export const entries = async () => {
 	let figures = await loadFigures();
 	return figures.map((figure) => ({
